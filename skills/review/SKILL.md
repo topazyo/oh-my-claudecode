@@ -37,6 +37,13 @@ A substantial diff is reviewed as two parallel sub-agent passes, reported separa
 
 Keep each sub-agent brief under ~400 words and pointed at one axis. Aggregate without picking a single winner across axes — that reranking is what the separation exists to prevent; state each axis's verdict on its own. A small diff stays one pass.
 
+## Multi-agent audits (fan-out + refutation)
+When a review fans out to several sub-agents and then runs a refutation pass:
+- **Never re-type a finding.** Extract each sub-agent's report verbatim from `subagents/agent-*.jsonl` (its hand-back message) by script, and build critic inputs and report rows from those files, not from memory.
+- **Shard refutation by severity, not topic.** Critical/High and traced-only rows go to a re-executing shard on the strongest model. Medium/Low/Nit rows go to a re-read shard with an explicit cheaper `model`, and their status label matches that effort.
+- **Launch the longest-running track first**, so its critic is not the critical path.
+- **Bound every sub-agent command.** Every `ctx_execute` call that is not a full test suite passes `timeoutMs: 60000`; the parameter is `timeoutMs`, not `timeout`. Never pipe a heredoc into an interpreter: an empty one into `python -` hangs until the timeout.
+
 ## Rules
 - Separate lanes: the reviewer must not be the author's same active context.
 - Verify before reporting. A plausible-sounding finding that does not reproduce is noise.
@@ -49,6 +56,13 @@ Keep each sub-agent brief under ~400 words and pointed at one axis. Aggregate wi
 - Findings, most-severe first, each with file, line, and concrete failure scenario
 - What was checked and found clean
 - Anything that could not be assessed
+
+## Deliverable conformance gate
+Before calling a written review done:
+1. At kickoff, copy every hard constraint of the requested deliverable into the checklist: exact headings, sentence caps, row schema, status definitions, final-reply format and write allowlist.
+2. Keep a `Deviations` list and a `Write ledger` (every path written outside job tmp, and by whom) from the moment each happens. Copy both into the report.
+3. Compute method and "every X" statements from ID sets at the end; never pre-write them in a skeleton.
+4. Run a script that checks each constraint and every cited `path:line` and quote. Re-run it after every fix pass.
 
 ## Quality Gates
 
