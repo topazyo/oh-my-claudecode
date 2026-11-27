@@ -23,6 +23,13 @@ Turn vague “it should work” claims into concrete evidence.
 3. Narrow direct command checks
 4. Manual or interactive validation
 
+## Before running a repo's code on this machine
+"Not elevated" protects only admin-ACL locations; user-writable paths such as `ProgramData` subfolders, `$env:TEMP` and `HKCU:` stay open. Before running a suite or script from the repo under test:
+1. Fetch CI results for the same commit first (`gh run list --commit <sha>`, then download the artifacts). A disposable runner may already have the answer.
+2. List every place the code can write: default `-Path`/`$LogPath` values, `ProgramData`, `$env:TEMP`, `HKLM:`/`HKCU:`, `Cert:\`, `Set-Content`/`Out-File`/`New-Item`, and any test `BeforeAll` that dot-sources a script before its `Mock`s. Exclude test files that run side-effecting code unmocked.
+3. Snapshot those locations before the run and diff them after. Write "no host changes" only once that diff exists.
+4. Put any hazard you find into every later sub-agent brief as a ban, not advice.
+
 ## Rules
 - Do not say a change is complete without evidence.
 - If a check fails, include the failure clearly.
