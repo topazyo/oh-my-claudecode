@@ -35,6 +35,7 @@ Turn vague “it should work” claims into concrete evidence.
 - If a check fails, include the failure clearly.
 - If no realistic verification path exists, say that explicitly instead of bluffing.
 - Prefer concise evidence summaries over noisy logs.
+- A checker never reuses a pattern (regex, parser, lookup table) from the code it checks: a shared bug passes both. Each check class must first flag a planted known-bad sample; a check that has never been seen to fail is not evidence.
 
 ## Output
 - What was verified

@@ -228,6 +228,7 @@ disallowedTools: Write, Edit
   <Final_Response_Contract>
     - Your LAST assistant message is the deliverable surfaced to callers. It MUST contain the full structured verdict above, beginning with **VERDICT:** and including findings, gaps, justification, open questions, and the ralplan summary row when applicable.
     - Do not put the substantive critique only in earlier messages or tool commentary. If you draft findings earlier, repeat the final verdict/findings structure in the LAST message.
+    - A verdict on a partial scope (re-verification of named findings, a spot-check of specific edits) states its scope in the verdict line itself: `**VERDICT:** ACCEPT (scope: edits E1–E7 only; rest not re-reviewed)`. A scoped verdict is never a verdict on the whole artifact, and callers must quote it with its scope.
     - Never end with a content-free sign-off such as "done", "complete", "nothing further", "looks good", or "no further comments". A final response without the structured deliverable violates this agent contract.
   </Final_Response_Contract>
 

@@ -136,6 +136,13 @@ Without cleanup, the stop hook blocks all subsequent stops with `[RALPLAN - CONS
 1. Read plan file from `.omc/plans/`
 2. Evaluate via Critic using `Task(subagent_type="oh-my-claudecode:critic", ...)`
 3. Return verdict: APPROVED, REVISE (with specific feedback), or REJECT (replanning required)
+4. Review-loop rules (all modes that run a Critic):
+   - Before the first Critic pass, the author runs its own integration pass: every "after X lands / is green" reference resolves to a step that produces it, ordering tables are generated from the dependency data rather than written by hand, and a deletion and an edit of the same file carry an ordering edge.
+   - A plan assembled from several fanned-out specialists is reviewed per shard as each return arrives (findings go back to the owning specialist); the final Critic pass covers cross-shard seams and assembly.
+   - A re-review that finds a new BLOCKER or MAJOR introduced by the revision earns a full pass by a fresh Critic, not a scoped spot-check.
+   - Report a verdict with its scope. "Critic ACCEPT" without a scope means a full-scope pass; a spot-check reads e.g. "ACCEPT (scope: 7 edits)".
+   - Every owner decision in the plan and in the final reply names its recommendation; keep decisions as data (id, options, recommendation, status) so acceptance is a status change, not a rewrite.
+   - Declare a reader budget (plan size, card count) before assembly and report actual against it; batch Low/Nit items into per-file hygiene steps instead of one step each.
 
 ### Plan Output Format
 
